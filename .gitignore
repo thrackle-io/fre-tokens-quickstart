@@ -5,7 +5,6 @@ out/
 # Ignores broadcast logs
 broadcast/
 
-# Docs
 node_modules/
 
 # Dotenv file
