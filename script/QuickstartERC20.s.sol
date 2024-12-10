@@ -9,8 +9,7 @@ contract DeployQuickstartERC20 is Script {
         // Define parameters for token deployment
         string memory tokenName = "QuickstartToken";
         string memory tokenSymbol = "QTK";
-        //address tokenAdmin = 0xE4F53F8aD1EB9B8A556ccF363a2389D59447a6df; // Dev Thrackle
-        address tokenAdmin = 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266;
+        address tokenAdmin = vm.envAddress("TOKEN_ADMIN");
 
         vm.startBroadcast();
         QuickstartERC20 token = new QuickstartERC20(
