@@ -4,90 +4,79 @@ This is a quickstart repo to easily deploy sample ERC-20 and/or ERC-721 token(s)
 
 ## Documentation
 
-https://docs.forterulesengine.io
+Check the docs at https://docs.forterulesengine.io/guides/ for more info.
+
+- [Deploy ERC-20 Token](https://docs.forterulesengine.io/guides/tokens/deploy-erc-20-token)
+- [Deploy ERC-721 Token](https://docs.forterulesengine.io/guides/tokens/deploy-erc-721-token)
 
 ## Usage
 
-### Fork and Clone
+This is a template repository that you can easily copy to your own github account with the "Use this template" button on home page of the repo. Then simply clone to your local machine to begin.
 
-Create a fork of this repo and then clone it to your local machine.
-
-```shell
-git clone git@github.com:<YOUR_GITHUB_USERNAME>/token-quickstart.git
-
+```bash
+git clone git@github.com:<YOUR_GITHUB_USERNAME>/fre-tokens-quickstart.git
 ```
 
-### Build
+### Setting up the `.env` File
 
-```shell
-forge build
+The project includes a `sample.env` to get you started. Copy that to a new file named `.env` and fill in the values.
+
+```bash
+cp sample.env .env
 ```
 
-### Test
-
-```shell
-forge test
+```bash .env
+ETH_RPC_URL=
+PRIV_KEY=
+TOKEN_ADMIN=
+ETHERSCAN_API_KEY=
 ```
 
-### Deploy the Quickstart Token
+Next, make your environment variables available to the command line for running the scripts to deploy your token contract.
 
-```shell
+```bash
+source .env
+```
+
+---
+
+### Deploy the Quickstart ERC-20 Token
+
+```bash
 forge script script/QuickstartERC20.s.sol:DeployQuickstartERC20 --rpc-url $ETH_RPC_URL --private-key $PRIV_KEY --broadcast --verify
 ```
 
-### Verify the Contract
-
-```shell
-forge verify-contract <CONTRACT_ADDRESS> --rpc-url <rpc>
-```
-
-requirements:
-
-- ETHERSCAN_API_KEY from basescan.org
+> [!NOTE]  
+> For the contract verification to work, you'll need to set the `ETHERSCAN_API_KEY` value in the `.env` file. You can obtain this for free from basescan.org. You can optionally remove the `--verify` switch from the above command.
 
 ### Mint Some Tokens
 
-```shell
-cast send 0xYourTokenAddress "mint(address,uint256)" 0xRecipientAddress 1000000000000000000000 --rpc-url $ETH_RPC_URL --private-key 0xYourPrivateKey
+```bash
+cast send 0xYourTokenAddress "mint(address,uint256)" 0xRecipientAddress 1000000000000000000000 --private-key $PRIV_KEY --rpc-url $ETH_RPC_URL
 ```
 
-# verify contract
+---
+
+### Deploy the Quickstart ERC-721 Token
 
 ```bash
-forge verify-contract 0xaF66085424Dc150B56ed6d8C16D9b863EbeeB92A --rpc-url https://base-sepolia.g.alchemy.com/v2/iprqfxvnTrUckGiS9kBmRVS1NYGHVinL --constructor-args ["QuickstartToken" "QTK" 0xE4F53F8aD1EB9B8A556ccF363a2389D59447a6df]
+forge script script/QuickstartERC721.s.sol:DeployQuickstartERC721 --rpc-url $ETH_RPC_URL --private-key $PRIV_KEY --broadcast --verify
 ```
 
-#abi encoded args
+> [!NOTE]  
+> For the contract verification to work, you'll need to set the `ETHERSCAN_API_KEY` value in the `.env` file. You can obtain this for free from basescan.org. You can optionally remove the `--verify` switch from the above command.
 
-```
-000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000a0000000000000000000000000e4f53f8ad1eb9b8a556ccf363a2389d59447a6df0000000000000000000000000000000000000000000000000000000000000010517569636b737461727420546f6b656e00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000351544b0000000000000000000000000000000000000000000000000000000000
-```
-
-# check status
+### Mint Some Tokens
 
 ```bash
-curl "https://api.basescan.org/api?module=contract&action=checkverifystatus&guid=RETURNED_GUID&apikey=API_KEY"
+cast send 0xYourTokenAddress "mint(address,uint256)" 0xRecipientAddress 1000000000000000000000 --private-key $PRIV_KEY --rpc-url $ETH_RPC_URL
 ```
 
-# mint tokens
+---
 
-```bash
-cast send <contract_address> "mint(address,uint256)" <recipient> 1000000000000000000000 --rpc-url https://base-sepolia.g.alchemy.com/v2/API_KEY --private-key <priv_key>
-```
+## Approve/Deny Oracle Contracts
 
-# hasRole TOKEN_ADMIN_ROLE
-
-```bash
-cast call <contract_address> "hasRole(bytes32,address)" 0x9e262e26e9d5bf97da5c389e15529a31bb2b13d89967a4f6eab01792567d5fd6 <address_to_check_for_role> --rpc-url https://base-sepolia.g.alchemy.com/v2/API_KEY
-```
-
-# getHandlerAddress
-
-```bash
-cast call <contract_address> "getHandlerAddress()" --rpc-url https://base-sepolia.g.alchemy.com/v2/API_KEY
-```
-
-## Oracle Time
+These are some sample contracts that can be used as starting points for [oracle based rules](https://docs.forterulesengine.io/v2.2.0/rules/account-approve-deny-oracle).
 
 ### Denial Oracle
 

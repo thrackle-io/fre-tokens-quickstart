@@ -1,7 +1,7 @@
 {
-  "name": "quickstart-erc20",
+  "name": "fre-tokens-quickstart",
   "version": "0.0.1",
-  "description": "Forte Rules Engine enabled ERC-20 token example/starter template.",
+  "description": "Forte Rules Engine enabled ERC-20 and ERC-721 token example/starter templates.",
   "directories": {
     "lib": "lib",
     "test": "test"
@@ -13,7 +13,7 @@
   "author": "Thrackle",
   "license": "ISC",
   "dependencies": {
-    "@openzeppelin/contracts": "^4.9.6",
-    "@thrackle-io/forte-rules-engine": "2.2.2-test-only"
+    "@openzeppelin/contracts": "4.9.6",
+    "@thrackle-io/forte-rules-engine": "2.2.1"
   }
 }
