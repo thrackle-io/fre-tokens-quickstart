@@ -1,8 +1,6 @@
-## Token Quickstart / Forte Rules Engine=
+## Token Quickstart / Forte Rules Engine
 
-This is a quickstart repo to easily deploy an ERC-20 token that includes the hooks for using the Forte Rules Engine.
-
-Questions - can I pass an address to the deploy scripts via command line?
+This is a quickstart repo to easily deploy sample ERC-20 and/or ERC-721 token(s) that includes the hooks for using the Forte Rules Engine.
 
 ## Documentation
 
