@@ -6,7 +6,6 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@thrackle-io/forte-rules-engine/src/client/token/IProtocolToken.sol";
 import "@thrackle-io/forte-rules-engine/src/client/token/IProtocolTokenHandler.sol";
-import "@thrackle-io/forte-rules-engine/src/client/token/handler/diamond/FeesFacet.sol";
 import {IZeroAddressError} from "@thrackle-io/forte-rules-engine/src/common/IErrors.sol";
 import {ITokenEvents, IApplicationEvents} from "@thrackle-io/forte-rules-engine/src/common/IEvents.sol";
 
@@ -55,96 +54,6 @@ contract QuickstartERC20 is
         uint256 amount
     ) public onlyRole(TOKEN_ADMIN_ROLE) {
         _mint(to, amount);
-    }
-
-    /**
-     * @dev This is overridden from {IERC20-transfer}. It handles all fees/discounts and then uses ERC20 _transfer to do the actual transfers
-     *
-     * Requirements:
-     *
-     * - `to` cannot be the zero address.
-     * - the caller must have a balance of at least `amount`.
-     */
-    // Disabling this finding, it is a false positive. A reentrancy lock modifier has been
-    // applied to this function
-    // slither-disable-start reentrancy-events
-    // slither-disable-start reentrancy-no-eth
-    function transfer(
-        address to,
-        uint256 amount
-    ) public virtual override nonReentrant returns (bool) {
-        address owner = _msgSender();
-        // if transfer fees/discounts are defined then process them first
-        if (FeesFacet(handlerAddress).isFeeActive()) {
-            // return the adjusted amount after fees
-            amount = _handleFees(owner, amount);
-        }
-        _transfer(owner, to, amount);
-        return true;
-    }
-
-    /**
-     * @dev This is overridden from {IERC20-transferFrom}. It handles all fees/discounts and then uses ERC20 _transfer to do the actual transfers
-     *
-     * Emits an {Approval} event indicating the updated allowance. This is not
-     * required by the EIP. See the note at the beginning of {ERC20}.
-     *
-     * NOTE: Does not update the allowance if the current allowance
-     * is the maximum `uint256`.
-     *
-     * Requirements:
-     *
-     * - `from` and `to` cannot be the zero address.
-     * - `from` must have a balance of at least `amount`.
-     * - the caller must have allowance for ``from``'s tokens of at least
-     * `amount`.
-     */
-    function transferFrom(
-        address from,
-        address to,
-        uint256 amount
-    ) public override nonReentrant returns (bool) {
-        address spender = _msgSender();
-        _spendAllowance(from, spender, amount);
-        // if transfer fees/discounts are defined then process them first
-        if (FeesFacet(handlerAddress).isFeeActive()) {
-            // return the adjusted amount after fees
-            amount = _handleFees(from, amount);
-        }
-        _transfer(from, to, amount);
-        return true;
-    }
-
-    // slither-disable-end reentrancy-events
-    // slither-disable-end reentrancy-no-eth
-    /**
-     * @dev This transfers all the P2P transfer fees to the individual fee sinks
-     * @param from sender address
-     * @param amount number of tokens being transferred
-     */
-    function _handleFees(
-        address from,
-        uint256 amount
-    ) internal returns (uint256) {
-        address[] memory targetAccounts;
-        int24[] memory feePercentages;
-        uint256 fees = 0;
-        (targetAccounts, feePercentages) = FeesFacet(handlerAddress)
-            .getApplicableFees(from, balanceOf(from));
-        for (uint i; i < feePercentages.length; ++i) {
-            if (feePercentages[i] > 0) {
-                // trim the fee and send it to the target fee sink account
-                uint fee = (amount * uint24(feePercentages[i])) / 10000;
-                if (fee > 0) {
-                    _transfer(from, targetAccounts[i], fee);
-                    emit AD1467_FeeCollected(targetAccounts[i], fee);
-                    // accumulate all fees
-                    fees += fee;
-                }
-            }
-        }
-        // subtract the total fees from main transfer amount
-        return amount -= fees;
     }
 
     /**
